@@ -1,10 +1,15 @@
-﻿namespace SimpleHttpServer
+﻿using HttpServer;
+using System.Net;
+using System.Net.Sockets;
+
+namespace SimpleHttpServer
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            var host = new ServerHost();
+            await host.StartAsync();
         }
     }
 }
