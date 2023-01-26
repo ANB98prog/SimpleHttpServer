@@ -11,4 +11,16 @@
     <ProjectReference Include="..\HttpServer\HttpServer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="www\favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="www\file.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="www\RIP.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

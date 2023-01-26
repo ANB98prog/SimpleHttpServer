@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HttpServer
 {
     public class ServerHost
     {
+        private readonly IHandler _handler;
+
+        public ServerHost()
+        {
+            _handler = new StaticFileHandler(Path.Combine(Environment.CurrentDirectory, "www"));
+        }
+
         public async Task StartAsync()
         {
             TcpListener listener = new TcpListener(IPAddress.Any, 12125);
@@ -19,24 +21,25 @@ namespace HttpServer
 
             while (true)
             {
-                using (var client = await listener.AcceptTcpClientAsync())
-                using (var stream = client.GetStream())
-                using (var reader = new StreamReader(stream))
-                using (var writer = new StreamWriter(stream))
-                {
-                    var header = await reader.ReadLineAsync();
-
-                    for (string data = null; data != string.Empty; data = await reader.ReadLineAsync())
-                        ;
-
-                    var request = RequestParser.Parse(header);
-
-                    await ResponseWriter.WriteResponseStatusAsync(stream, HttpStatusCode.OK);
-
-                    await writer.WriteLineAsync("Hello from server!");
-                }
+                var client = await listener.AcceptTcpClientAsync();
+                var _ = ProcessClientAsync(client);
             }
+        }
 
+        private async Task ProcessClientAsync(TcpClient client)
+        {
+            using (var stream = client.GetStream())
+            using (var reader = new StreamReader(stream))
+            {
+                var header = await reader.ReadLineAsync();
+
+                for (string data = null; data != string.Empty; data = await reader.ReadLineAsync())
+                    ;
+
+                var request = RequestParser.Parse(header);
+
+                await _handler.HandleAsync(stream, request);
+            }
         }
     }
 }

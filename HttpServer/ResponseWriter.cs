@@ -4,14 +4,14 @@ namespace HttpServer
 {
     internal static class ResponseWriter
     {
-        internal static void WriteResponseStatus(Stream stream, HttpStatusCode statusCode)
+        internal static void WriteResponseStatus(HttpStatusCode statusCode, Stream stream)
         {
             using StreamWriter writer = new StreamWriter(stream, leaveOpen: true);
             writer.WriteLine(GetResponseText(statusCode));
             writer.WriteLine("");
         }
 
-        internal static async Task WriteResponseStatusAsync(Stream stream, HttpStatusCode statusCode)
+        internal static async Task WriteResponseStatusAsync(HttpStatusCode statusCode, Stream stream)
         {
             using StreamWriter writer = new StreamWriter(stream, leaveOpen: true);
             await writer.WriteLineAsync(GetResponseText(statusCode));
