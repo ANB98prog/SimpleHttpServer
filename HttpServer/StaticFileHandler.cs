@@ -25,6 +25,8 @@
             {
                 Console.WriteLine("File not found!");
                 await ResponseWriter.WriteResponseStatusAsync(System.Net.HttpStatusCode.NotFound, stream);
+                using var writer = new StreamWriter(stream);
+                await writer.WriteLineAsync($"File {Path.GetFileName(fullPath)} is not found!");
             }
             else
             {
