@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using System.Net;
+using HttpServer.Handlers;
 
 namespace HttpServer
 {
@@ -7,9 +8,9 @@ namespace HttpServer
     {
         private readonly IHandler _handler;
 
-        public ServerHost()
+        public ServerHost(IHandler handler)
         {
-            _handler = new StaticFileHandler(Path.Combine(Environment.CurrentDirectory, "www"));
+            _handler = handler;
         }
 
         public async Task StartAsync()
@@ -28,17 +29,25 @@ namespace HttpServer
 
         private async Task ProcessClientAsync(TcpClient client)
         {
-            using (var stream = client.GetStream())
-            using (var reader = new StreamReader(stream))
+            try
             {
-                var header = await reader.ReadLineAsync();
+                using (client)
+                using (var stream = client.GetStream())
+                using (var reader = new StreamReader(stream))
+                {
+                    var header = await reader.ReadLineAsync();
 
-                for (string data = null; data != string.Empty; data = await reader.ReadLineAsync())
-                    ;
+                    for (string data = null; data != string.Empty; data = await reader.ReadLineAsync())
+                        ;
 
-                var request = RequestParser.Parse(header);
+                    var request = RequestParser.Parse(header);
 
-                await _handler.HandleAsync(stream, request);
+                    await _handler.HandleAsync(stream, request);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
         }
     }
