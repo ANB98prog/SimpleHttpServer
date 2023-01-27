@@ -56,13 +56,11 @@ namespace HttpServer.Handlers
         {
             if (response is string str)
             {
-                await ResponseWriter.WriteResponseStatusAsync(System.Net.HttpStatusCode.OK, stream);
                 using var writer = new StreamWriter(stream);
                 await writer.WriteLineAsync(str);
             }
             else if(response is byte[] buffer)
             {
-                await ResponseWriter.WriteResponseStatusAsync(System.Net.HttpStatusCode.OK, stream);
                 await stream.WriteAsync(buffer, 0, buffer.Length);
             }
             else if(response is Task task)
